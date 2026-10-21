@@ -1,18 +1,20 @@
-# Donut Trader 0.3.0 — Fabric 1.21.11
+# Donut Trader 0.3.1 — Fabric 1.21.11
 
-**[Yeni JAR'ı indir](donut-trader-1.21.11-dashboard-0.3.0.jar?raw=true)** · [Kaynak kodu](donut-trader-source-0.3.0.zip?raw=true)
+**[Yeni JAR'ı indir](donut-trader-1.21.11-alt-0.3.1.jar?raw=true)** · [Kaynak kodu](donut-trader-source-0.3.1.zip?raw=true)
 
 Minecraft Java **1.21.11**, Java **21**, Fabric Loader **0.19.5+** ve 1.21.11 Fabric API gerekir. Eski Donut Trader JAR'ını kaldırıp yeni JAR'ı `mods` klasörüne koyun. Aynı anda iki sürüm kurmayın.
 
 ## Kullanım
 
-- **Sağ Shift**, **`/dt`** veya **`/dt ui`**: paneli açar. Özet, Fırsatlar, Filtreler, Geçmiş sekmeleri vardır.
+- **Sol Alt**, **`/dt`** veya **`/dt ui`**: paneli açar. Özet, Fırsatlar, Filtreler, Geçmiş sekmeleri vardır.
 - **`/dt auto`** veya panelde **AUTO aç**: otomatik arama, uygun alış ve yeniden ilan akışını başlatır.
 - **`/dt stop`**: durdurur. **`/dt status`**: hangi aşamada olduğu, kaç ilan taradığı ve neden almıyor. **`/dt market`**: veri kaynakları.
 
 Panel açıkken yeni işlem yapılmaz; kapanınca arama yeniden açılır. Ekonomik işlemin ortasında panel açılmaz. Filtre değişikliği AUTO'yu durdurur. Oyun açıldığında AUTO kendiliğinden başlamaz.
 
 ## Geliştirmeler
+
+**0.3.1:** menüyü açma/kapatma tuşu Sol Alt oldu. Eski kaydedilmiş Sağ Shift ayarını taşımamak için menü tuşunun kimliği yenilendi. `/dt` ve `/dt ui` korunur.
 
 Gonuts'un MIT lisanslı **RobustStats** istatistik kodu dahil edildi: uç satışları ayıklama, log-MAD ve çeyreklik fiyat dağılımı. Kontrol paneli, eşya kara listesi, kalıcı işlem günlüğü ve neden beklediğini gösteren durum eklendi. Güncel Gonuts 26.2/Java25 hedeflidir; bu JAR, mevcut 1.21.11 istemcisinin geliştirilmiş sürümüdür, upstream'in bütün GUI/Swarm/Discord/proxy özelliklerinin portu değildir.
 
