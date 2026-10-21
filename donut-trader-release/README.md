@@ -1,29 +1,37 @@
-# Donut Trader 0.2.0 — Fabric 1.21.11
+# Donut Trader 0.3.0 — Fabric 1.21.11
 
-[**Download the automatic trading JAR**](donut-trader-1.21.11-auto-0.2.0.jar?raw=true).
+**[Yeni JAR'ı indir](donut-trader-1.21.11-dashboard-0.3.0.jar?raw=true)** · [Kaynak kodu](donut-trader-source-0.3.0.zip?raw=true)
 
-Remove older Donut Trader JARs from your Minecraft `mods` folder and install this JAR. Requires Minecraft Java **1.21.11**, Fabric Loader **0.19.5+**, and Fabric API for **1.21.11**. On DonutSMP run:
+Minecraft Java **1.21.11**, Java **21**, Fabric Loader **0.19.5+** ve 1.21.11 Fabric API gerekir. Eski Donut Trader JAR'ını kaldırıp yeni JAR'ı `mods` klasörüne koyun. Aynı anda iki sürüm kurmayın.
 
-```text
-/dt auto
-```
+## Kullanım
 
-`/dt stop` stops; `/dt status` reports progress; `/dt market` reports the public price source. No API key, Python process, manual screen profile, or old `/dt arm` sequence is needed for AUTO. The mod does not start trading by itself when Minecraft launches.
+- **Sağ Shift**, **`/dt`** veya **`/dt ui`**: paneli açar. Özet, Fırsatlar, Filtreler, Geçmiş sekmeleri vardır.
+- **`/dt auto`** veya panelde **AUTO aç**: otomatik arama, uygun alış ve yeniden ilan akışını başlatır.
+- **`/dt stop`**: durdurur. **`/dt status`**: hangi aşamada olduğu, kaç ilan taradığı ve neden almıyor. **`/dt market`**: veri kaynakları.
 
-## Behavior and limits
+Panel açıkken yeni işlem yapılmaz; kapanınca arama yeniden açılır. Ekonomik işlemin ortasında panel açılmaz. Filtre değişikliği AUTO'yu durdurur. Oyun açıldığında AUTO kendiliğinden başlamaz.
 
-AUTO searches standard commodities, scans up to three pages per item, checks at least five matching live peer listings, buys a qualifying stack and relists it. Total cumulative purchase budget is **10,000,000 coins**, including previously reserved purchases. Minimum estimated net margin is **15%**; AUTO assumes at least **10%** selling fees for calculations. The actual server fee and eventual sale price are not verified by that estimate.
+## Geliştirmeler
 
-The public [DonutSMP Terminal snapshot](https://donutsmpterminal.com/snapshots/latest.json) supplies AH unit-price references (array index 2). It only caps resale estimates downward; live matching listings are also required. The snapshot expires six hours after its capture timestamp. Its prices are asking-price references, not completed sales. No static price list is embedded.
+Gonuts'un MIT lisanslı **RobustStats** istatistik kodu dahil edildi: uç satışları ayıklama, log-MAD ve çeyreklik fiyat dağılımı. Kontrol paneli, eşya kara listesi, kalıcı işlem günlüğü ve neden beklediğini gösteren durum eklendi. Güncel Gonuts 26.2/Java25 hedeflidir; bu JAR, mevcut 1.21.11 istemcisinin geliştirilmiş sürümüdür, upstream'in bütün GUI/Swarm/Discord/proxy özelliklerinin portu değildir.
 
-The purchase budget is persisted before clicking. Compact prices such as `$2.5M` are treated as ranges, with the upper bound reserved. Native Minecraft confirmation dialogs require exact item/count and bounded price evidence. Delivery and hotbar moves require server inventory updates. A relist is only reported after a new matching row appears in Your Items; inventory disappearance alone is insufficient. Existing identical inventory stacks are skipped, and multi-page personal listings or unrecognized screens stop the transaction rather than guessing.
+**API anahtarı zorunlu değildir.** Dış fiyat referansı eksik/eskimiş/engelli olduğunda en az beş aynı eşya/adette canlı akran ilanı kullanılır. Bu, tamamlanmış satış veya gerçek talep kanıtı değildir; panel bunu belirtir. Fiyat dağılımı %30'dan genişse işlem yapılmaz. Uygun ve taze web referansı hedefi yalnızca aşağı sınırlar. Son web kontrolü HTTP403 verdi; yeni sürüm bu durumda canlı ekran karşılaştırmasına devam edebilir.
 
-A confirmed listing is **not a completed sale or realized profit**. Direct-delivery purchases retain the visible quote upper bound as estimated cost; exact account debits are not independently measured. Unknown post-purchase states remain recorded in `config/donut-trader-ledger.json` and block a blind retry. Do not delete that file to work around an unresolved transaction. Existing older-version budgets are migrated to minor currency units; do not run an older JAR against the migrated ledger.
+İsteğe bağlı DONUT+ API anahtarı panelde panodan eklenebilir. Anahtar yalnızca yerel dosyada tutulur ve resmi api.donutsmp.net adresine Bearer olarak gönderilir; sohbet/loglarda gösterilmez. Resmi tamamlanmış işlem sayfaları arka planda 30 saniye aralıkla okunur. Yeterli kanıt için son üç günde en az beş kabul edilen satış, üç satıcı ve son altı saatte bir satış gerekir. Tekrarlanan sayfalar, özel eşyalar ve uç değerler ayıklanır; oynaklık %30'u aşan eşya bekletilir. Son başarılı okuma 90 saniyeden eskiyse bu referans kullanılmaz. Örneklenen satış/saat tüm pazarın likiditesi olarak gösterilmez. Anahtar yokken sahte satış veya demo fiyatı üretilmez.
 
-## Validation
+## Bütçe ve kayıtlar
 
-Fabric/Minecraft compilation, **54 tests**, and a read-only live public-source probe passed. The probe found 1,408 usable references in the 21 October 2026 05:45 UTC snapshot. Tests cover decimal and compact prices, budget migration, the supplied 45-listing layout, native dialog evidence, authoritative inventory acknowledgements, and new-listing conditions. **Actual account purchases and relisting on DonutSMP were not exercised in this build environment.**
+Toplam kümülatif alış bütçesi **10m**, asgari **tahmini net marj %15**, hesaplanan satış ücreti **en az %10 varsayımıdır**. Gerçek sunucu ücreti ve gerçekleşmiş kâr kanıtlanmış değildir. Kısa fiyat etiketlerinin üst sınırı alış tıklamasından önce bütçeye kalıcı ayrılır. Doğrudan teslimde kesin hesap kesintisi ayrıca ölçülmez; bütçe görünen teklifin ayrılan üst sınırını izler.
 
-UI research reference: [pinned AuctionExitExecutor](https://github.com/0utsights/donut-auction-flipper/blob/bc14d4ef5a5382e7bfca32125272e1f9dd87430c/minecraft/client-mod/src/main/java/net/donutnetwork/client/AuctionExitExecutor.java). Public price-source information: [DonutSMP Terminal](https://donutsmpterminal.com/info/about-us).
+Gerçek envanter paketi, tam eşya/adet ve yeni Your Items ilanı kontrol edilir. Envanterden kaybolması tek başına satış başarısı değildir. Belirsiz ekonomik işlem otomatik tekrar edilmez. `config/donut-trader-ledger.json` bütçe dosyası korunmalı; silmek bütçeyi sıfırlar. Yeni `donut-trader-history.json` sadece işlem geçmişidir. Grafik **ilanların tahmini net kârını** gösterir; ilan açılması, eşyanın satıldığı veya kâr elde edildiği anlamına gelmez.
 
-`SHA256SUMS` contains download checksums. Previous JARs are retained as historical artifacts; install only the 0.2.0 JAR.
+## Doğrulama ve kaynaklar
+
+Java21/Fabric1.21.11 derlemesi ve **80 test** geçti. Para aralıkları, bütçe, yerel diyalog/teslim kanıtı, API şeması ve tekrarlanan kayıtlar, satıcı yoğunluğu, oynaklık, kaynak yokluğunda canlı akran tahmini ve kalıcı günlük kontrol edildi. **Gerçek hesapla DonutSMP alış/satışı ve yeni panelin oyunda görüntülenmesi bu ortamda denenmedi.** Kâr garantisi yoktur.
+
+Kaynak arşivi üretim kodunu ve 71 sentetik testi içerir; kullanıcı tarafından sağlanan canlı ekran kaydı ve ona bağlı dokuz test yerelde tutulmuştur. Kaynak arşivinde Java21 ile `gradlew.bat build` veya `./gradlew build` kullanılabilir.
+
+[Gonuts, pinned source](https://github.com/cody-raves/Gonuts/tree/1f7712fce7e7f01288e099790c1409dbf2e57b1c) · [Resmi API sözleşmesi](https://api.donutsmp.net/doc.json) · [Web referansı](https://donutsmpterminal.com/snapshots/latest.json). Gonuts copyright2026cody-raves ve MIT lisansı JAR içindeki `GONUTS-NOTICE.txt` / `licenses/Gonuts-MIT.txt` dosyalarındadır.
+
+`SHA256SUMS` tüm JAR ve kaynak arşivi dosyalarının indirme kontrolünü içerir. Önceki sürümler yalnızca tarihsel dosyalardır.
