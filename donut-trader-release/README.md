@@ -1,24 +1,29 @@
-# Donut Trader 0.1.2 — Fabric 1.21.11
+# Donut Trader 0.2.0 — Fabric 1.21.11
 
-Download **donut-trader-1.21.11-web-0.1.2.jar** with GitHub's Download raw file button. Remove older Donut Trader JARs from your Minecraft mods directory before installing. Requires Fabric Loader 0.19.5+ and Fabric API for Minecraft 1.21.11.
+[**Download the automatic trading JAR**](donut-trader-1.21.11-auto-0.2.0.jar?raw=true).
 
-## Public web reference, no API key
+Remove older Donut Trader JARs from your Minecraft `mods` folder and install this JAR. Requires Minecraft Java **1.21.11**, Fabric Loader **0.19.5+**, and Fabric API for **1.21.11**. On DonutSMP run:
 
-This build reads the public [DonutSMP Terminal snapshot](https://donutsmpterminal.com/snapshots/latest.json), also used by the site's [All Items page](https://donutsmpterminal.com/all_items). It refreshes in the background at most once per five minutes while connected to DonutSMP. Run `/dt market` to see source status, usable item count and snapshot age. No separate Python process or DonutSMP API key is required.
+```text
+/dt auto
+```
 
-The live integration check on 21 October 2026 received 1,408 usable AH unit-price references from a snapshot captured at **05:45 UTC / 08:45 Turkey time**. Example references in that snapshot: diamond 8,000; ancient debris 4,100,000; netherite ingot 12,100,000. These are reported asking-price references, not verified sales or permanent prices. No static price list is embedded in the JAR.
+`/dt stop` stops; `/dt status` reports progress; `/dt market` reports the public price source. No API key, Python process, manual screen profile, or old `/dt arm` sequence is needed for AUTO. The mod does not start trading by itself when Minecraft launches.
 
-The site's schema is `[order, orderChange, AH, AHChange]`; this mod reads the AH column. A snapshot expires six hours after its own capture time, even if downloaded again. Individual item observation timestamps are not provided by the snapshot. [The source itself notes that captured prices may differ from the live auction house](https://donutsmpterminal.com/info/about-us).
+## Behavior and limits
 
-The reference can only lower a resale estimate derived from current in-game listings. At least five matching live peer listings are still required, along with exact item components and stack counts. Custom items and enchanted variants are excluded from web pricing. Missing/expired references block automatic purchases while `useWebReference` is enabled. Total purchase budget remains 10,000,000 coins and minimum estimated net margin remains 15% after the configured fee.
+AUTO searches standard commodities, scans up to three pages per item, checks at least five matching live peer listings, buys a qualifying stack and relists it. Total cumulative purchase budget is **10,000,000 coins**, including previously reserved purchases. Minimum estimated net margin is **15%**; AUTO assumes at least **10%** selling fees for calculations. The actual server fee and eventual sale price are not verified by that estimate.
 
-## First use
+The public [DonutSMP Terminal snapshot](https://donutsmpterminal.com/snapshots/latest.json) supplies AH unit-price references (array index 2). It only caps resale estimates downward; live matching listings are also required. The snapshot expires six hours after its capture timestamp. Its prices are asking-price references, not completed sales. No static price list is embedded.
 
-1. Install the JAR and start Minecraft with Fabric.
-2. On DonutSMP, run `/dt local` to disable any old official-API requirement, then `/dt market`. Default `useWebReference` is true, including when loading an older config that lacks this field.
-3. Configure the actual auction title, price line, confirmation title/item/button slots, allowed items and real fee. Open `/ah`, close it, then `/dt inspect`; inspect the confirmation screen separately. `/dt start` only observes; `/dt stop` stops.
-4. `/dt arm` requires a verified screen/fee profile, an allowed item list, a valid ledger and current web references. It does not turn on automatically at startup.
+The purchase budget is persisted before clicking. Compact prices such as `$2.5M` are treated as ranges, with the upper bound reserved. Native Minecraft confirmation dialogs require exact item/count and bounded price evidence. Delivery and hotbar moves require server inventory updates. A relist is only reported after a new matching row appears in Your Items; inventory disappearance alone is insufficient. Existing identical inventory stacks are skipped, and multi-page personal listings or unrecognized screens stop the transaction rather than guessing.
 
-**Automatic trading remains disabled until the actual server screens and fee are configured and verified.** Minecraft/Fabric compilation, 17 Java tests and a read-only live source request passed. Actual purchases and relisting on DonutSMP have not been tested. A price comparison is not proof of a completed sale or guaranteed profit.
+A confirmed listing is **not a completed sale or realized profit**. Direct-delivery purchases retain the visible quote upper bound as estimated cost; exact account debits are not independently measured. Unknown post-purchase states remain recorded in `config/donut-trader-ledger.json` and block a blind retry. Do not delete that file to work around an unresolved transaction. Existing older-version budgets are migrated to minor currency units; do not run an older JAR against the migrated ledger.
 
-`SHA256SUMS` contains download checksums. Version 0.1.1 is retained for rollback; install only one version at a time.
+## Validation
+
+Fabric/Minecraft compilation, **54 tests**, and a read-only live public-source probe passed. The probe found 1,408 usable references in the 21 October 2026 05:45 UTC snapshot. Tests cover decimal and compact prices, budget migration, the supplied 45-listing layout, native dialog evidence, authoritative inventory acknowledgements, and new-listing conditions. **Actual account purchases and relisting on DonutSMP were not exercised in this build environment.**
+
+UI research reference: [pinned AuctionExitExecutor](https://github.com/0utsights/donut-auction-flipper/blob/bc14d4ef5a5382e7bfca32125272e1f9dd87430c/minecraft/client-mod/src/main/java/net/donutnetwork/client/AuctionExitExecutor.java). Public price-source information: [DonutSMP Terminal](https://donutsmpterminal.com/info/about-us).
+
+`SHA256SUMS` contains download checksums. Previous JARs are retained as historical artifacts; install only the 0.2.0 JAR.
